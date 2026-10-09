@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bilancio</title>
+<meta name="theme-color" content="#0f6b54">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef2ef; --sheet:#fbfcfb; --ink:#14261f; --muted:#5b6d65; --line:#d3dcd6;
+  --accent:#0f6b54; --accent-ink:#ffffff; --soft:#dfeae4;
+  --pos:#12704f; --neg:#b3382c; --warn:#8a5a00;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0e1714; --sheet:#16221d; --ink:#e6efe9; --muted:#93a69d; --line:#2a3a33;
+  --accent:#4fc3a1; --accent-ink:#06231a; --soft:#1f3029;
+  --pos:#5fd0a4; --neg:#ff8a7a; --warn:#e2b45a; color-scheme:dark}}
+@media print{:root{
+  --bg:#fff; --sheet:#fff; --ink:#000; --muted:#444; --line:#bbb;
+  --accent:#000; --accent-ink:#fff; --soft:#eee; --pos:#000; --neg:#000; --warn:#000; color-scheme:light}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .in{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.brand{font-family:var(--display);font-weight:700;font-size:19px;margin-right:auto;background:none;border:0;color:var(--ink);padding:0;cursor:pointer}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer}
+.tab{border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:7px 12px;border-radius:999px;font-weight:500}
+.tab[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);padding:10px 16px;border-radius:10px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
+.link{background:none;border:0;color:var(--accent);padding:0;text-decoration:underline;font-weight:500}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.head{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between;margin:24px 0 14px}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.saldo{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.saldo .n{font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw,52px);line-height:1;font-variant-numeric:tabular-nums}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid currentColor}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .muted{color:var(--muted)}
+.rows{display:flex;flex-direction:column}
+.row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .v{font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
+.row.sub{padding:5px 0 5px 14px;border-bottom:0;color:var(--muted);font-size:14px}
+.row.tot{font-weight:600}
+.row .l{min-width:0;overflow-wrap:anywhere}
+.ibox{display:inline-block;border:1px solid var(--warn);color:var(--warn);border-radius:6px;padding:0 6px;font-weight:700;font-size:13px;margin-right:6px}
+.del{background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline;margin-left:8px;padding:0}
+.del[data-armed]{color:var(--neg);font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.mbtn{text-align:left;background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.mbtn b{font-family:var(--display);font-size:16px}
+.mbtn span{font-variant-numeric:tabular-nums;font-size:14px}
+.mbtn.future{opacity:.5}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tfoot td{font-weight:600;border-bottom:0;background:var(--soft)}
+tr.future td{color:var(--muted)}
+.isum{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--warn);border-radius:14px;padding:14px 18px}
+.isum .n{font-family:var(--display);font-weight:700;font-size:26px;color:var(--warn);font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted);margin:0}
+.syncbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--sheet);color:var(--ink);padding:20px;width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+form{display:flex;flex-direction:column;gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+input,select{font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:500;max-width:calc(100vw - 32px);z-index:20}
+@media print{
+  header.top,.actions,.del,.chips,.syncbar,#toast,.noprint{display:none!important}
+  .wrap{max-width:none;padding:0} .tw{overflow:visible} table{font-size:11px} th,td{padding:5px 6px}
+  .sheet,.tw,.isum{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <button class="brand" data-go="home">Bilancio</button>
+  <nav>
+    <button class="tab" data-go="home">Mese</button>
+    <button class="tab" data-go="storico">Storico</button>
+    <button class="tab" data-go="anno">Bilancio annuale</button>
+    <button class="tab" data-settings aria-label="Impostazioni">Dati</button>
+  </nav>
+</div></header>
+<div class="wrap"><main id="app"></main></div>
+
+<dialog id="dlg"><form id="frm">
+  <h2 id="dlgT">Aggiungi</h2>
+  <label>Data<input type="date" id="fDate" required></label>
+  <label id="lDesc">Descrizione<input type="text" id="fDesc" maxlength="80" placeholder="es. Riparazione auto"></label>
+  <label id="lAmt">Importo in euro<input type="text" inputmode="decimal" id="fAmt" placeholder="es. 120,50"></label>
+  <label id="lInc">Voci del giorno<input type="text" id="fInc" placeholder="es. 50c 40b"></label>
+  <p class="note" id="fErr" hidden></p>
+  <div class="actions"><button class="btn" type="submit">Salva</button><button class="btn ghost" type="button" data-close>Annulla</button></div>
+</form></dialog>
+
+<dialog id="set"><div class="stack">
+  <h2>Dati e calendario</h2>
+  <label>Calendario da leggere<select id="sCal"></select></label>
+  <p class="note" id="sCalNote"></p>
+  <h2>Esporta e importa</h2>
+  <p class="note">L'esportazione salva un file con tutto: voci del calendario, incassi a mano, spese spot e straordinarie. Serve come copia di sicurezza o per passare a un altro telefono.</p>
+  <div class="actions"><button class="btn" data-export>Esporta dati</button><button class="btn ghost" data-pick>Importa da file</button></div>
+  <input type="file" id="fFile" accept=".json,application/json" hidden>
+  <p class="note" id="impOut"></p>
+  <div class="actions"><button class="btn" id="impGo" hidden>Sostituisci i dati attuali</button><button class="btn ghost" type="button" data-close>Chiudi</button></div>
+</div></dialog>
+<div id="toast" hidden role="status"></div>
+
+<script src="config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const CID=(window.BILANCIO_CLIENT_ID||"").trim();
+const SCOPE="https://www.googleapis.com/auth/calendar.readonly";
+const FIXED=[["Accumulo",350],["ENPAV",420],["Giro spese",470],["Commercialista",90]];
+const FIXED_TOT=FIXED.reduce((s,f)=>s+f[1],0), RATE=0.15, KEY="bilancio-v1";
+const MESI=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+const $=s=>document.querySelector(s), pad=n=>String(n).padStart(2,"0");
+const now=new Date(), NOW_KEY=now.getFullYear()+"-"+pad(now.getMonth()+1), TODAY=NOW_KEY+"-"+pad(now.getDate());
+const eur=n=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(Math.round(n*100)/100||0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+let S={months:{},expenses:[],calId:"",cals:[],last:{}};
+try{ const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S=Object.assign(S,s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ toast("Non riesco a salvare sul telefono: spazio pieno o navigazione privata."); } }
+let view="home", selYear=now.getFullYear(), selMonth=null, pending=null, syncing=false;
+
+/* ---------- lettura voci ---------- */
+function parseAmounts(t){
+  const o={c:0,b:0}; const re=/(\d+(?:[.,]\d{1,2})?)\s?(?:€\s?)?([cb])(?![a-zà-ÿ])/gi; let m;
+  while((m=re.exec(t||""))) o[m[2].toLowerCase()]+=parseFloat(m[1].replace(",","."));
+  return o;
+}
+
+/* ---------- Google Calendar ---------- */
+let token=null, tokenExp=0, tc=null, waiter=null;
+function getToken(){ return new Promise((res,rej)=>{
+  if(token&&Date.now()<tokenExp) return res(token);
+  if(!window.google||!google.accounts||!google.accounts.oauth2) return rej({code:"offline"});
+  waiter={res,rej};
+  tc=tc||google.accounts.oauth2.initTokenClient({client_id:CID,scope:SCOPE,
+    callback:r=>{ if(r.error) return waiter.rej({code:r.error}); token=r.access_token; tokenExp=Date.now()+((+r.expires_in||3600)-60)*1000; waiter.res(token); },
+    error_callback:e=>waiter.rej({code:e&&e.type||"popup"})});
+  tc.requestAccessToken({prompt:""});
+});}
+async function api(path){
+  const r=await fetch("https://www.googleapis.com/calendar/v3/"+path,{headers:{Authorization:"Bearer "+token}});
+  if(r.status===401){ token=null; throw {code:"auth"}; }
+  if(!r.ok) throw {code:"http"+r.status};
+  return r.json();
+}
+async function sync(year){
+  if(syncing) return; if(!CID) return toast("Manca l'ID client Google nel file config.js.");
+  syncing=true; render();
+  try{
+    await getToken();
+    const l=await api("users/me/calendarList?minAccessRole=reader&maxResults=250");
+    S.cals=(l.items||[]).map(c=>({id:c.id,name:c.summaryOverride||c.summary||c.id,primary:!!c.primary}));
+    if(!S.cals.some(c=>c.id===S.calId)) S.calId=((S.cals.find(c=>c.primary)||S.cals[0])||{}).id||"primary";
+    const out={}; let n=0, page="";
+    const q="timeMin="+encodeURIComponent(new Date(year,0,1).toISOString())+"&timeMax="+encodeURIComponent(new Date(year+1,0,1).toISOString())+
+      "&singleEvents=true&maxResults=2500&fields="+encodeURIComponent("nextPageToken,items(status,summary,description,start)");
+    do{
+      const r=await api("calendars/"+encodeURIComponent(S.calId)+"/events?"+q+(page?"&pageToken="+encodeURIComponent(page):""));
+      for(const ev of r.items||[]){
+        if(ev.status==="cancelled"||!ev.start) continue;
+        const a=parseAmounts((ev.summary||"")+" "+String(ev.description||"").replace(/<[^>]+>/g," "));
+        if(!a.c&&!a.b) continue;
+        let ds=ev.start.date; if(!ds){ const d=new Date(ev.start.dateTime); ds=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+        if(+ds.slice(0,4)!==year) continue;
+        const k=ds.slice(0,7), dd=ds.slice(8,10); out[k]=out[k]||{}; const day=out[k][dd]=out[k][dd]||{c:0,b:0};
+        day.c+=a.c; day.b+=a.b; n++;
+      }
+      page=r.nextPageToken||"";
+    }while(page);
+    for(let m=1;m<=12;m++){ const k=year+"-"+pad(m); if(out[k]||S.months[k]) S.months[k]={cal:out[k]||{},man:(S.months[k]&&S.months[k].man)||{}}; }
+    S.last[year]=Date.now(); save(); toast(n?`Calendario ${year} aggiornato: ${n} voci.`:`Nessuna voce C o B trovata nel ${year}.`);
+  }catch(e){
+    const c=e&&e.code||"";
+    toast(c==="offline"?"Serve la connessione a internet per leggere il calendario.":
+      c==="popup_closed"||c==="access_denied"?"Accesso a Google annullato.":
+      c==="popup_failed_to_open"?"Il browser ha bloccato la finestra di Google. Consenti i popup e riprova.":
+      c==="auth"?"Accesso scaduto. Tocca di nuovo Aggiorna.":"Non sono riuscito a leggere il calendario. Riprova.");
+  }
+  syncing=false; render();
+}
+
+/* ---------- calcoli ---------- */
+function monthData(key){
+  const m=S.months[key]||{}, days={};
+  for(const src of ["cal","man"]) for(const [d,v] of Object.entries(m[src]||{})){
+    const x=days[d]=days[d]||{c:0,b:0,man:false}; x.c+=+v.c||0; x.b+=+v.b||0; if(src==="man") x.man=true;
+  }
+  let c=0,b=0; for(const v of Object.values(days)){c+=v.c;b+=v.b;}
+  const i=b*RATE, net=c+b-i;
+  const spotList=S.expenses.filter(e=>e.kind==="spot"&&(e.date||"").startsWith(key));
+  const spot=spotList.reduce((s,e)=>s+(+e.amount||0),0);
+  const active=key<=NOW_KEY||c+b>0||spot>0;
+  const fixed=active?FIXED_TOT:0;
+  return {key,days,c,b,i,net,spotList,spot,fixed,active,saldo:net-fixed-spot};
+}
+function yearData(y){
+  const rows=MESI.map((_,k)=>monthData(y+"-"+pad(k+1)));
+  const t={c:0,b:0,i:0,net:0,fixed:0,spot:0,saldo:0};
+  rows.forEach(r=>{for(const k in t)t[k]+=r[k];});
+  const extraList=S.expenses.filter(e=>e.kind==="extra"&&(e.date||"").startsWith(y+"-"));
+  const extra=extraList.reduce((s,e)=>s+(+e.amount||0),0);
+  return {rows,t,extraList,extra,final:t.saldo-extra};
+}
+function years(){
+  const s=new Set([now.getFullYear(),now.getFullYear()-1]);
+  Object.keys(S.months).forEach(k=>s.add(+k.slice(0,4))); S.expenses.forEach(e=>e.date&&s.add(+e.date.slice(0,4)));
+  return [...s].sort((a,b)=>b-a);
+}
+
+/* ---------- viste ---------- */
+const cls=n=>n<0?"neg":"pos";
+function syncBar(y){
+  const t=S.last[y];
+  return `<div class="syncbar"><span class="note">${!CID?"Calendario non ancora collegato: manca l'ID client Google in config.js.":t?"Calendario "+y+" letto il "+new Date(t).toLocaleString("it-IT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"Calendario "+y+" non ancora letto."}</span>
+    <button class="btn ghost" data-sync="${y}" ${syncing||!CID?"disabled":""}>${syncing?"Leggo il calendario…":"Aggiorna dal calendario"}</button></div>`;
+}
+function monthSheet(key){
+  const m=monthData(key), days=Object.keys(m.days).sort();
+  return `<section class="sheet stack">
+    <div class="saldo"><span class="n ${cls(m.saldo)}">${eur(m.saldo)}</span>
+      <span class="pill ${cls(m.saldo)}">${m.saldo<0?"In passivo":"In attivo"}</span><span class="muted">saldo del mese</span></div>
+    <div class="rows">
+      <div class="row"><span class="l">Voce C</span><span class="v">${eur(m.c)}</span></div>
+      <div class="row"><span class="l">Voce B</span><span class="v">${eur(m.b)}</span></div>
+      <div class="row"><span class="l"><span class="ibox">i</span>15% di B</span><span class="v">− ${eur(m.i)}</span></div>
+      <div class="row tot"><span class="l">Entrate (C + B − i)</span><span class="v">${eur(m.net)}</span></div>
+      <div class="row tot"><span class="l">Spese fisse</span><span class="v">− ${eur(m.fixed)}</span></div>
+      ${m.fixed?FIXED.map(f=>`<div class="row sub"><span class="l">${f[0]}</span><span class="v">${eur(f[1])}</span></div>`).join(""):""}
+      <div class="row tot"><span class="l">Spese spot</span><span class="v">− ${eur(m.spot)}</span></div>
+      ${m.spotList.map(e=>`<div class="row sub"><span class="l">${esc(e.date.slice(8))}/${esc(e.date.slice(5,7))} · ${esc(e.label||"Spesa")}<button class="del" data-del="${esc(e.id)}">Elimina</button></span><span class="v">${eur(+e.amount)}</span></div>`).join("")}
+    </div>
+    <div class="actions"><button class="btn" data-add="spot" data-key="${key}">+ Add spesa spot</button>
+      <button class="link" data-add="inc" data-key="${key}">Aggiungi un incasso a mano</button></div>
+    ${!days.length?`<p class="note">Nessuna voce C o B per questo mese. Tocca "Aggiorna dal calendario" per leggerle.</p>`:""}
+  </section>
+  ${days.length?`<div class="tw"><table><thead><tr><th>Giorno</th><th>C</th><th>B</th><th>i</th></tr></thead><tbody>
+    ${days.map(d=>{const v=m.days[d];return `<tr><td>${d}${v.man?` <button class="del" data-delman="${key}|${d}">togli voci a mano</button>`:""}</td><td>${eur(v.c)}</td><td>${eur(v.b)}</td><td>${eur(v.b*RATE)}</td></tr>`}).join("")}
+  </tbody></table></div>`:""}`;
+}
+function render(){
+  document.querySelectorAll(".tab[data-go]").forEach(t=>t.removeAttribute("aria-current"));
+  const cur=document.querySelector(`.tab[data-go="${view}"]`); if(cur) cur.setAttribute("aria-current","page");
+  const chips=()=>`<div class="chips">${years().map(y=>`<button class="tab" ${y===selYear?'aria-current="page"':""} data-year="${y}">${y}</button>`).join("")}</div>`;
+  let h="";
+  if(view==="home"){
+    h=`<div class="head"><div><div class="eyebrow">Mese in corso</div><h1>${MESI[now.getMonth()]} ${now.getFullYear()}</h1></div></div>
+      <div class="stack">${syncBar(now.getFullYear())}${monthSheet(NOW_KEY)}</div>`;
+  } else if(view==="storico"){
+    if(selMonth){
+      h=`<div class="head"><div><div class="eyebrow">Storico</div><h1>${MESI[+selMonth.slice(5)-1]} ${selMonth.slice(0,4)}</h1></div>
+        <div class="actions"><button class="btn ghost" data-back>← Tutti i mesi</button></div></div><div class="stack">${monthSheet(selMonth)}</div>`;
+    } else {
+      const yd=yearData(selYear);
+      h=`<div class="head"><div><div class="eyebrow">Storico</div><h1>Anno ${selYear}</h1></div>${chips()}</div>
+        <div class="stack">${syncBar(selYear)}
+        <div class="mgrid">${yd.rows.map((r,k)=>`<button class="mbtn ${r.active?"":"future"}" data-month="${r.key}"><b>${MESI[k]}</b>
+          <span class="muted">Entrate ${eur(r.net)}</span><span class="${r.active?cls(r.saldo):"muted"}">${r.active?"Saldo "+eur(r.saldo):"Non ancora iniziato"}</span></button>`).join("")}</div></div>`;
+    }
+  } else {
+    const yd=yearData(selYear), t=yd.t;
+    h=`<div class="head"><div><div class="eyebrow">Bilancio annuale</div><h1>Anno ${selYear}</h1></div>${chips()}</div>
+      <div class="stack">${syncBar(selYear)}
+      <div class="isum"><span><span class="ibox">i</span>Somma dei valori i (15% di B) nel ${selYear}</span><span class="n">${eur(t.i)}</span></div>
+      <div class="tw"><table><thead><tr><th>Mese</th><th>C</th><th>B</th><th>i</th><th>Entrate</th><th>Fisse</th><th>Spot</th><th>Saldo</th></tr></thead><tbody>
+        ${yd.rows.map((r,k)=>`<tr class="${r.active?"":"future"}"><td>${MESI[k]}</td><td>${eur(r.c)}</td><td>${eur(r.b)}</td><td>${eur(r.i)}</td><td>${eur(r.net)}</td><td>${eur(r.fixed)}</td><td>${eur(r.spot)}</td><td class="${r.active?cls(r.saldo):""}">${r.active?eur(r.saldo):"—"}</td></tr>`).join("")}
+      </tbody><tfoot><tr><td>Totale</td><td>${eur(t.c)}</td><td>${eur(t.b)}</td><td>${eur(t.i)}</td><td>${eur(t.net)}</td><td>${eur(t.fixed)}</td><td>${eur(t.spot)}</td><td class="${cls(t.saldo)}">${eur(t.saldo)}</td></tr></tfoot></table></div>
+      <section class="sheet stack">
+        <h2>Spese straordinarie</h2>
+        <div class="rows">${yd.extraList.length?yd.extraList.map(e=>`<div class="row"><span class="l">${esc(e.date.slice(8))}/${esc(e.date.slice(5,7))} · ${esc(e.label||"Spesa")}<button class="del" data-del="${esc(e.id)}">Elimina</button></span><span class="v">− ${eur(+e.amount)}</span></div>`).join(""):`<p class="note">Nessuna spesa straordinaria per il ${selYear}.</p>`}
+          <div class="row tot"><span class="l">Saldo dei mesi</span><span class="v">${eur(t.saldo)}</span></div>
+          <div class="row tot"><span class="l">Spese straordinarie</span><span class="v">− ${eur(yd.extra)}</span></div>
+          <div class="row tot"><span class="l">Risultato dell'anno</span><span class="v ${cls(yd.final)}">${eur(yd.final)}</span></div>
+        </div>
+        <div class="actions"><button class="btn" data-add="extra">+ Add spesa straordinaria</button>
+          <button class="btn ghost" data-print>Stampa / salva PDF</button></div>
+        <p class="note noprint">Le spese fisse (${eur(FIXED_TOT)} al mese) sono contate fino al mese in corso; i mesi futuri restano fuori dal saldo.</p>
+      </section></div>`;
+  }
+  $("#app").innerHTML=h;
+}
+
+/* ---------- azioni ---------- */
+let tt; function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,4000); }
+let mode="spot";
+function openAdd(kind,key){
+  mode=kind; $("#frm").reset(); $("#fErr").hidden=true;
+  $("#dlgT").textContent=kind==="spot"?"Nuova spesa spot":kind==="extra"?"Nuova spesa straordinaria":"Incasso a mano";
+  $("#lDesc").hidden=$("#lAmt").hidden=kind==="inc"; $("#lInc").hidden=kind!=="inc";
+  let d=TODAY; if(kind==="extra"&&selYear!==now.getFullYear()) d=selYear+"-12-31"; else if(key&&key!==NOW_KEY) d=key+"-01";
+  $("#fDate").value=d; $("#dlg").showModal();
+}
+$("#frm").addEventListener("submit",ev=>{
+  ev.preventDefault(); const date=$("#fDate").value, err=m=>{$("#fErr").textContent=m;$("#fErr").hidden=false;};
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return err("Scegli una data.");
+  if(mode==="inc"){
+    const a=parseAmounts($("#fInc").value); if(!a.c&&!a.b) return err("Scrivi le voci come nel calendario, ad esempio 50c 40b.");
+    const key=date.slice(0,7), d=date.slice(8), m=S.months[key]=S.months[key]||{cal:{},man:{}}; m.man=m.man||{};
+    const o=m.man[d]||{c:0,b:0}; m.man[d]={c:o.c+a.c,b:o.b+a.b}; toast("Incasso aggiunto");
+  } else {
+    const amount=parseFloat($("#fAmt").value.replace(/\s|€/g,"").replace(",","."));
+    if(!(amount>0)) return err("Scrivi un importo maggiore di zero, ad esempio 120,50.");
+    S.expenses.push({id:"e"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind:mode,date,label:$("#fDesc").value.trim()||"Spesa",amount:Math.round(amount*100)/100});
+    toast("Spesa aggiunta");
+  }
+  $("#dlg").close(); save(); render();
+});
+function openSettings(){
+  const sel=$("#sCal"); sel.innerHTML=S.cals.length?S.cals.map(c=>`<option value="${esc(c.id)}" ${c.id===S.calId?"selected":""}>${esc(c.name)}${c.primary?" (principale)":""}</option>`).join(""):`<option value="">Calendario principale</option>`;
+  $("#sCalNote").textContent=S.cals.length?"Dopo aver cambiato calendario tocca Aggiorna dal calendario.":"L'elenco dei calendari compare dopo il primo accesso a Google.";
+  $("#impOut").textContent=""; $("#impGo").hidden=true; pending=null; $("#set").showModal();
+}
+$("#sCal").addEventListener("change",e=>{ if(e.target.value){ S.calId=e.target.value; S.last={}; save(); render(); } });
+$("#fFile").addEventListener("change",async ev=>{
+  const f=ev.target.files[0]; pending=null; $("#impGo").hidden=true; if(!f) return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(d.app!=="bilancio"||typeof d.months!=="object"||!Array.isArray(d.expenses)) throw 0;
+    pending=d; $("#impGo").hidden=false;
+    $("#impOut").textContent=`File del ${new Date(d.exported||0).toLocaleDateString("it-IT")}: ${Object.keys(d.months).length} mesi e ${d.expenses.length} spese. L'importazione sostituisce tutti i dati presenti ora su questo telefono.`;
+  }catch(e){ $("#impOut").textContent="Questo file non è un'esportazione di Bilancio."; }
+  ev.target.value="";
+});
+$("#impGo").addEventListener("click",()=>{
+  if(!pending) return; S.months=pending.months; S.expenses=pending.expenses.filter(e=>e&&e.date&&e.kind);
+  pending=null; save(); render(); $("#set").close(); toast("Dati importati");
+});
+function exportData(){
+  const blob=new Blob([JSON.stringify({app:"bilancio",v:1,exported:new Date().toISOString(),months:S.months,expenses:S.expenses},null,1)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="bilancio-"+TODAY+".json";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),5000); toast("File esportato nella cartella Download");
+}
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest("button"); if(!b) return; const d=b.dataset;
+  if("close" in d) return b.closest("dialog").close();
+  if(d.go){ view=d.go; selMonth=null; if(view==="home") selYear=now.getFullYear(); return render(); }
+  if(d.year){ selYear=+d.year; selMonth=null; return render(); }
+  if(d.month){ selMonth=d.month; return render(); }
+  if("back" in d){ selMonth=null; return render(); }
+  if(d.add) return openAdd(d.add,d.key);
+  if(d.sync) return sync(+d.sync);
+  if("settings" in d) return openSettings();
+  if("export" in d) return exportData();
+  if("pick" in d) return $("#fFile").click();
+  if("print" in d) return window.print();
+  if(d.del||d.delman){
+    if(!("armed" in d)){ b.dataset.armed=""; b.textContent="Conferma?"; return; }
+    if(d.del) S.expenses=S.expenses.filter(e=>e.id!==d.del);
+    else { const [k,day]=d.delman.split("|"); if(S.months[k]&&S.months[k].man) delete S.months[k].man[day]; }
+    save(); return render();
+  }
+});
+render();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

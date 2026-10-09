@@ -1,0 +1,44 @@
+BILANCIO - come metterla online e installarla
+
+PARTE 1 - Pubblicare l'app (GitHub Pages, gratis)
+1. Vai su github.com e accedi (o crea un account).
+2. Crea un nuovo repository pubblico chiamato "bilancio".
+3. "Add file" > "Upload files": carica TUTTI i file di questa cartella, poi "Commit changes".
+4. Settings > Pages > Source "Deploy from a branch" > Branch "main", cartella "/ (root)" > Save.
+5. Dopo un paio di minuti l'app e' su:  https://TUO-UTENTE.github.io/bilancio/
+
+PARTE 2 - Chiave di accesso Google (gratis)
+1. Vai su console.cloud.google.com e crea un progetto chiamato "Bilancio".
+2. "API e servizi" > "Libreria": cerca "Google Calendar API" e premi Abilita.
+3. "API e servizi" > "Schermata consenso OAuth" (Google Auth Platform):
+   tipo utente "Esterno", nome app "Bilancio", la tua email come assistenza e contatto.
+4. In "Accesso ai dati" (ambiti) aggiungi:  .../auth/calendar.readonly
+5. In "Pubblico" > "Utenti di test" aggiungi l'indirizzo Gmail di Noemi (e il tuo per provare).
+6. "Client" (Credenziali) > "Crea client OAuth" > tipo "Applicazione web".
+   In "Origini JavaScript autorizzate" metti:  https://TUO-UTENTE.github.io
+   (solo questo, senza /bilancio e senza barra finale).
+7. Copia l'ID client (finisce con .apps.googleusercontent.com).
+8. Apri config.js, incolla l'ID tra le virgolette e ricarica il file su GitHub.
+
+PARTE 3 - Installazione sul telefono di Noemi
+1. Apri l'indirizzo dell'app con Chrome.
+2. Menu (tre puntini) > "Installa app" oppure "Aggiungi a schermata Home".
+3. Apri Bilancio dall'icona e tocca "Aggiorna dal calendario".
+4. Scegli l'account Google di Noemi. Se compare "Google non ha verificato questa app":
+   "Avanzate" > "Vai a Bilancio (non sicura)" > Consenti. E' normale finche' l'app e' in modalita' test.
+5. Se le voci stanno in un calendario diverso da quello principale: pulsante "Dati" > scegli il calendario > "Aggiorna dal calendario".
+
+USO
+- "Aggiorna dal calendario" rilegge l'anno mostrato. I dati letti restano sul telefono e si vedono anche senza rete.
+- L'accesso a Google dura circa un'ora: dopo, al prossimo aggiornamento, puo' ricomparire per un attimo la finestra di Google.
+- "Dati" > "Esporta dati" salva una copia di sicurezza; "Importa da file" la ricarica (anche su un altro telefono).
+- "Bilancio annuale" > "Stampa / salva PDF": nella finestra di stampa scegli "Salva come PDF".
+
+PARTE 4 - Verifica di Google (facoltativa)
+Serve solo per togliere l'avviso "app non verificata". Per un'app usata da Noemi non e' necessaria.
+Se vuoi farla: Schermata consenso OAuth > "Pubblica app" > "Prepara per la verifica". Google chiede:
+- pagina iniziale dell'app e informativa sulla privacy (c'e' gia' privacy.html: metti la tua email dentro);
+- proprieta' del dominio verificata con Google Search Console;
+- motivo per cui serve l'accesso in lettura al calendario;
+- un breve video (YouTube, non in elenco) che mostra l'accesso e l'uso dei dati.
+La verifica e' gratuita e richiede di solito da qualche giorno a qualche settimana.
